@@ -18,3 +18,4 @@ pnpm install pirate-hooks
 
 - useRequest
 - useMemoizedCallback
+- useMergedList
