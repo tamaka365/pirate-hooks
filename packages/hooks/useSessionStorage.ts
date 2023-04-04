@@ -4,7 +4,7 @@ import Store from '../utils/store';
 
 const store = new Store();
 
-const useLocalStorage = <T extends any = string>(
+const useSessionStorage = <T extends any = string>(
   key: string,
   options = { serialize: true, scope: 'document' }
 ) => {
@@ -21,4 +21,4 @@ const useLocalStorage = <T extends any = string>(
   return [state, setStore] as [T, (value?: T) => void];
 };
 
-export default useLocalStorage;
+export default useSessionStorage;

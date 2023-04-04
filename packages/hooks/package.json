@@ -1,0 +1,13 @@
+{
+  "name": "pirate-hooks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "peerDependencies": {
+    "react": ">= 17"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

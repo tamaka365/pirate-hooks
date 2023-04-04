@@ -1,38 +1,33 @@
-interface Store<K extends string = string, R extends any = any> {
-  set: (key: K, value: R) => void;
-  on: (
-    key: 'state',
-    receiver: (event: CustomEvent<{ [k in K]: R }>) => void
-  ) => void;
+type stateType = Record<string, any>;
+
+const $$state: Record<symbol, any> = {};
+
+export default class Store {
+  #key = Symbol('key');
+  #target = new EventTarget();
+
+  #createEvent(state: stateType) {
+    return new CustomEvent('state', {
+      detail: state,
+    });
+  }
+
+  set(key: string, value: stateType) {
+    const oldState = $$state[this.#key];
+    $$state[this.#key] = { ...oldState, [key]: value };
+    this.#target.dispatchEvent(this.#createEvent($$state[this.#key]));
+  }
+
+  on(key: string, listener: any) {
+    const state = $$state[this.#key];
+
+    if (state) {
+      listener(state[key]);
+    }
+
+    this.#target.addEventListener('state', event => {
+      const { detail } = event as any as { detail: stateType };
+      listener(detail[key]);
+    });
+  }
 }
-
-type State = Record<string, any>;
-
-const newEvent = (state: State) =>
-  new CustomEvent('state', {
-    detail: state,
-  });
-
-const state: State = {};
-
-export const store = new Proxy(new EventTarget(), {
-  get(target: EventTarget, prop: string) {
-    if (prop === 'on') {
-      const value = target['addEventListener'];
-      return function (...args: any) {
-        if (args[0] === 'state') {
-          value.apply(target, args);
-
-          target.dispatchEvent(newEvent(state));
-        }
-      };
-    }
-    if (prop === 'set') {
-      return function (key: string, value: any) {
-        state[key] = value;
-
-        return target.dispatchEvent(newEvent(state));
-      };
-    }
-  },
-}) as any as Store;
